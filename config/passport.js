@@ -1,14 +1,12 @@
-const { authSecret } = require('../.env')
 const passport = require('passport')
 const passportJwt = require('passport-jwt')
 const { Strategy, ExtractJwt } = passportJwt
 const Conta = require("../models/Conta")
 
 module.exports = (req,res) => {
-    console.log('dentro pass')
     //if(!req.body.token) res.send({'error': 'token faltando'})
     const params = {
-        secretOrKey: authSecret,
+        secretOrKey: process.env.AUTH_SECRET,
         jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
     }
 

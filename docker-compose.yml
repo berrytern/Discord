@@ -1,0 +1,51 @@
+version: "3.8"
+services:
+  mongo:
+    image: mongo
+    container_name: mongo
+    ports:
+      - 27017:27017
+    restart: always
+    command: >
+      --tlsMode=allowTLS
+      --tlsCertificateKeyFile=/etc/ssl/server.pem
+      --auth
+      --setParameter authenticationMechanisms=PLAIN,SCRAM-SHA-1
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    volumes:
+      - ds-mongo-data:/data/db
+      - .certs/mongodb:/etc/ssl:ro
+    networks:
+      - ds-network
+    logging:
+      driver: json-file
+      options:
+        max-size: 100m
+  
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: ds-rabbitmq
+    restart: always
+    ports:
+      - 15672:15672 # Management UI
+      - 5672:5672 # AMQP Protocol
+      - 5671:5671 # AMQPS Protocol
+    volumes:
+      - ./.certs/rabbitmq:/etc/ssl:ro
+      - ./external_config/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+    networks: 
+      - ds-network
+    logging:
+      driver: json-file
+      options:
+        max-size: 100m
+
+volumes:
+    ds-mongo-data:
+        name: ds-mongo
+networks:
+  ds-network:
+    name: ds-network
+    driver: bridge

@@ -30,5 +30,3 @@ function filter(array,limit,mult) {
     } 
     return shadow
 }
-console.log(filter(arr,14,3))
-console.log(arr.map((pessoa)=>{if(pessoa.age<14){return pessoa}else{return {'name':pessoa.name,"age":pessoa.age*3}}}))
