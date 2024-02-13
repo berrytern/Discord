@@ -18,6 +18,17 @@ document.querySelector('.inputimg').onchange = function(evt){
         alert('tamanho ultrapassado')
     }
 }
+document.querySelector('div.horizon').onclick = function(evt){
+    document.querySelector('input.password').focus()
+}
+document.querySelector('img.password').onmouseover = function(evt){
+    evt.target.src = '../see.png'
+    document.querySelector('input.password').type = 'text'
+}
+document.querySelector('img.password').onmouseleave= function(evt){
+    evt.target.src = '../unsee.png'
+    document.querySelector('input.password').type = 'password'
+}
 var f_topic='none'
 var lastselected = 'amigos'
 var lastoption = 'none'
@@ -566,7 +577,7 @@ function user_edit(action=''){
         console.log(new_pass)
         if(new_pass){
             document.querySelector('div.account-user.edit div  div.user-change label.lbl-newpassword').remove()
-            document.querySelector('div.account-user.edit div  div.user-change input.newpassword').remove()
+            document.querySelector('div.account-user.edit div  div.user-change div#newpassword').remove()
             let a = document.createElement('a')
             a.innerText='Mudar senha?'
             a.onclick=()=>{edit_password(); a.innerHTML=''}
@@ -657,15 +668,32 @@ function user_edit(action=''){
 }
 function edit_password(){
     document.querySelector('div.account-user.edit div  div.user-change a').innerHTML =''
-    let label = document.createElement('label')
+    const div = document.createElement('div')
+    div.className = 'horizon'
+    div.id = 'newpassword'
+    const label = document.createElement('label')
     label.className = 'lbl-newpassword'
     label.innerText = 'NOVA SENHA'
-    let input = document.createElement('input')
-    input.type = 'text'
+    const input = document.createElement('input')
+    input.type = 'password'
     input.className = 'newpassword'
-
+    const img = document.createElement('img')
+    img.src = '../unsee.png'
+    img.className = 'password'
+    div.appendChild(input)
+    const imgDiv = document.createElement('div')
+    imgDiv.appendChild(img)
+    div.appendChild(imgDiv)
+    img.onmouseover = function(evt){
+        evt.target.src = '../see.png'
+        input.type = 'text'
+    }
+    img.onmouseleave= function(evt){
+        evt.target.src = '../unsee.png'
+        input.type = 'password'
+    }
     document.querySelector('div.account-user.edit div  div.user-change').appendChild(label)
-    document.querySelector('div.account-user.edit div  div.user-change').appendChild(input)
+    document.querySelector('div.account-user.edit div  div.user-change').appendChild(div)
     new_pass = true
 }
 

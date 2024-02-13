@@ -317,6 +317,37 @@ div.account-edit-info div input{
     margin-bottom: 16px;
     color: white;
 }
+div.account-edit-info div div.horizon{
+    height: 35px;
+    display: flex;
+    flex-direction: row;
+    background-color: rgb(47, 49, 54);
+    border: solid 1px rgb(22, 22, 22);
+    border-radius: 4px;
+    margin-bottom: 6px;
+}
+div.account-edit-info div div.horizon:hover{
+    cursor: text;
+}
+div.account-edit-info div div.horizon input{
+    height: 33px;
+    width: 95%;
+    display: flex;
+    flex-direction: row;
+    border: solid 0px;
+}
+div.account-edit-info div.horizon div {
+    margin-top: 10px;
+    height: 15px;
+    width: 15px;
+}
+div.account-edit-info div.horizon img.password{
+    height: 15px;
+    width: 15px;
+    filter: invert(100%);
+}div.account-edit-info div.horizon  img.password:hover{
+    cursor: pointer;
+}
 .user-change a{
     width: 88px;
 }
@@ -592,15 +623,17 @@ a.navl.add{
 .message{
     display: flex;
     flex-direction: column;
+    overflow-x:hidden;
     overflow-y:auto;
     flex: 1 2;
     height: calc(calc(100vh - 64px - 48px) - 1.3em);
+    max-height: calc(calc(100vh - 64px - 48px) - 1.3em);
     width: 100%;
 }
 .message-content{
     flex-direction: column;
+    overflow-x:hidden;
     overflow-y:auto;
-    
 }
 .send-message{
     display: none;
