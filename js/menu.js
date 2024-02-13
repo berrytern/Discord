@@ -684,6 +684,7 @@ function edit_password(){
     const imgDiv = document.createElement('div')
     imgDiv.appendChild(img)
     div.appendChild(imgDiv)
+    div.onclick = function(evt) {input.focus()}
     img.onmouseover = function(evt){
         evt.target.src = '../see.png'
         input.type = 'text'
