@@ -1,4 +1,4 @@
-//var socket= io('http://localhost:9030');
+//var socket= io('http://5.189.175.37:9030');
 console.log('algo')
 document.querySelector('#submit').addEventListener('click',(function(){
     var username = document.querySelector('#username').value
