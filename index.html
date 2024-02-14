@@ -9,6 +9,7 @@
 <body>
     <nav>
     <a href="./html/login.html">login</a>
+    <a href="./html/cadastro.html">cadastro</a>
     </nav>
 </body>
 </html>
@@ -20,7 +21,7 @@ if(!token){
 }
 else{
     validate= new XMLHttpRequest
-    validate.open("POST",location.protocol+"//"+location.hostname+':'+ location.port+'/validate')
+    validate.open('POST','https://discord.berrytern.com.br:8082/validate')
     validate.setRequestHeader("Content-Type","application/json")
     validate.send('{"token":"'+token+'"}')
     validate.onload=(e)=>{

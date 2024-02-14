@@ -74,7 +74,7 @@ function Conversas(){
             biggestnum = Number(biggest.split(':')[1])+1
         }else{biggest='n'}
         newmsg = new XMLHttpRequest()
-        newmsg.open("GET","http://5.189.175.37:8082/conversa/"+id+`/${biggestnum}/n`)
+        newmsg.open("GET","https://5.189.175.37:8082/conversa/"+id+`/${biggestnum}/n`)
         newmsg.setRequestHeader('Authorization','Bearer '+user.token)
         newmsg.setRequestHeader('Content-Type','application/json')
         newmsg.onerror=(e)=>{console.log('error')}
@@ -116,7 +116,7 @@ function Conversas(){
                     let before
                     if(Number(next[1])-10<0){before = 0}else{before = Number(next[1])-10}
                     let load=new XMLHttpRequest
-                    load.open("GET","http://5.189.175.37:8082/conversa/"+`${id}/${before}/${next[1]}`)
+                    load.open("GET","https://5.189.175.37:8082/conversa/"+`${id}/${before}/${next[1]}`)
                     load.setRequestHeader('Authorization','Bearer '+user.token)
                     load.send()
                     load.onload=()=>{
@@ -174,7 +174,7 @@ function Conversas(){
     }
     this.get=()=>{request= new XMLHttpRequest
         document.querySelector('div.option.center-content .option-cvs').innerHTML = ''
-        request.open("GET",'http://5.189.175.37:8082/conversas')
+        request.open("GET",'https://5.189.175.37:8082/conversas')
         request.setRequestHeader('Authorization', 'bearer '+user.token)
         request.send()
         request.onload = ()=>{
@@ -397,7 +397,7 @@ function Conversas(){
         navl.appendChild(info)
         if(status.src.length>0){navl.appendChild(status)}
         let getmsg = new XMLHttpRequest
-        getmsg.open('GET','http://5.189.175.37:8082/conversa/'+id+'/n/n')
+        getmsg.open('GET','https://5.189.175.37:8082/conversa/'+id+'/n/n')
         getmsg.setRequestHeader('Authorization','Bearer ' + user.token)
         getmsg.send()
         getmsg.onload = () => {
@@ -443,7 +443,7 @@ function Conversas(){
             if(e.key=="Enter"){
                 console.log(id)
                 let sendm = new XMLHttpRequest 
-                sendm.open('POST', `http://5.189.175.37:8082/message/${id}`)
+                sendm.open('POST', `https://5.189.175.37:8082/message/${id}`)
                 sendm.setRequestHeader('Authorization', "Bearer " + user.token)
                 sendm.setRequestHeader('Content-Type', 'application/json')
                 sendm.send(`{"type":"text","message":"${message.value}"}`)
@@ -523,7 +523,7 @@ function user_status(){
 function change_status(status){
     reauth()
     request = new XMLHttpRequest
-    request.open('POST',"http://5.189.175.37:8082/status")
+    request.open('POST',"https://5.189.175.37:8082/status")
     request.setRequestHeader('Authorization', "Bearer " + user.token)
     request.setRequestHeader('Content-Type','application/json')
     request.send(`{"status":"${status}"}`)
@@ -597,7 +597,7 @@ function user_edit(action=''){
                     if(username !=user.username){
                         change_u =true
                         u_change = new XMLHttpRequest
-                        u_change.open('POST',"http://5.189.175.37:8082/change/username")
+                        u_change.open('POST',"https://5.189.175.37:8082/change/username")
                         u_change.setRequestHeader('Authorization', "Bearer " + user.token)
                         u_change.setRequestHeader('Content-Type','application/json')
                         u_change.send(`{"username":"${username}","password":"${password}"}`)
@@ -617,7 +617,7 @@ function user_edit(action=''){
                         formData.append("password", password);
                         formData.append('file', fileimg[0], fileimg[0].name);
                         i_change = new XMLHttpRequest
-                        i_change.open('POST',"http://5.189.175.37:8082/change/icon",true)
+                        i_change.open('POST',"https://5.189.175.37:8082/change/icon",true)
                         i_change.setRequestHeader('Authorization', "Bearer " + user.token)
                         i_change.setRequestHeader("data",formData)
                         i_change.send(formData);
@@ -635,7 +635,7 @@ function user_edit(action=''){
                                 if(password==new_password){aviso(document.querySelector('.user-content'),'Senha antiga e nova são idênticas','red',4000)
                                 }else{
                                     p_change = new XMLHttpRequest
-                                    p_change.open('POST',"http://5.189.175.37:8082/change/password")
+                                    p_change.open('POST',"https://5.189.175.37:8082/change/password")
                                     p_change.setRequestHeader('Authorization', "Bearer " + user.token)
                                     p_change.setRequestHeader('Content-Type','application/json')
                                     p_change.send(`{"password":"${password}","newpassword": "${new_password}"}`)
@@ -700,7 +700,7 @@ function edit_password(){
 
 function logout(){
     request = new XMLHttpRequest
-    request.open('POST',"http://5.189.175.37:8082/logout")
+    request.open('POST',"https://5.189.175.37:8082/logout")
     request.setRequestHeader('Authorization', "Bearer " + user.token)
     request.setRequestHeader('Content-Type','application/json')
     request.send()
@@ -809,7 +809,7 @@ function Friends(){
         if(f_topic!='none'){reauth()}
         if(f_topic!='able'){f_topic='able'}
         let request = new XMLHttpRequest
-        request.open("POST", "http://5.189.175.37:8082/friends")
+        request.open("POST", "https://5.189.175.37:8082/friends")
         request.setRequestHeader('Authorization',"Bearer "+ user.token)
         request.send()
         request.onload= ()=>{
@@ -902,7 +902,7 @@ function Friends(){
                                 exc.onmouseleave = ()=>{exc.style.background ='transparent'}
                                 exc.onclick = ()=>{
                                     let excluir = new XMLHttpRequest
-                                    excluir.open("POST", "http://5.189.175.37:8082/friend/delete")
+                                    excluir.open("POST", "https://5.189.175.37:8082/friend/delete")
                                     excluir.setRequestHeader('Authorization',"Bearer "+ user.token)
                                     excluir.setRequestHeader('Content-Type','application/json')
                                     excluir.send(`{"to":"${resp.list[friend].id}"}`)
@@ -959,7 +959,7 @@ function Friends(){
         if(f_topic!='none'){reauth()}
         if(f_topic!='all'){f_topic='all'}
         let request = new XMLHttpRequest
-        request.open("POST", "http://5.189.175.37:8082/friends")
+        request.open("POST", "https://5.189.175.37:8082/friends")
         request.setRequestHeader('Authorization',"Bearer "+ user.token)
         request.send()
         request.onload= ()=>{
@@ -1014,7 +1014,7 @@ function Friends(){
                     }
                     msg.onclick =()=>{
                         let find = new XMLHttpRequest
-                        find.open('POST','http://5.189.175.37:8082/conversa/new')
+                        find.open('POST','https://5.189.175.37:8082/conversa/new')
                         find.setRequestHeader('Authorization','Bearer '+user.token)
                         find.setRequestHeader('Content-Type','application/json')
                         find.send('{"to":["'+resp.list[friend].id+'"]}')
@@ -1069,7 +1069,7 @@ function Friends(){
                         exc.onmouseleave = ()=>{exc.style.background ='transparent'}
                         exc.onclick = ()=>{
                             let excluir = new XMLHttpRequest
-                            excluir.open("POST", "http://5.189.175.37:8082/friend/delete")
+                            excluir.open("POST", "https://5.189.175.37:8082/friend/delete")
                             excluir.setRequestHeader('Authorization',"Bearer "+ user.token)
                             excluir.setRequestHeader('Content-Type','application/json')
                             excluir.send(`{"to":"${resp.list[friend].id}"}`)
@@ -1160,7 +1160,7 @@ function Friends(){
         btn.style.borderLeft= '0'
         btn.onclick=()=>{
             pedid = new XMLHttpRequest
-            pedid.open('POST','http://5.189.175.37:8082/pedido/new')
+            pedid.open('POST','https://5.189.175.37:8082/pedido/new')
             pedid.setRequestHeader('Authorization','Bearer '+user.token)
             pedid.setRequestHeader('Content-Type','application/json')
             pedid.send(`{"to":"${input.value}"}`)
@@ -1195,7 +1195,7 @@ function Friends(){
         if(f_topic!='none'){reauth()}
         if(f_topic!='pedidos'){f_topic = "pedidos"}
         let request = new XMLHttpRequest
-        request.open("POST", "http://5.189.175.37:8082"+"/pedidos")
+        request.open("POST", "https://5.189.175.37:8082"+"/pedidos")
         request.setRequestHeader('Authorization',"Bearer "+ user.token)
         request.send()
         request.onload= ()=>{
@@ -1247,7 +1247,7 @@ function Friends(){
                         catch(e){}
                         let aceitar = new XMLHttpRequest
                         console.log(resp.list[friend].id)
-                        aceitar.open("POST", "http://5.189.175.37:8082/friend/new")
+                        aceitar.open("POST", "https://5.189.175.37:8082/friend/new")
                         aceitar.setRequestHeader('Authorization',"Bearer "+ user.token)
                         aceitar.setRequestHeader('Content-Type','application/json')
                         aceitar.send(`{"to":"${resp.list[friend].id}"}`)
@@ -1270,7 +1270,7 @@ function Friends(){
                         catch(e){}
                         console.log('exc')
                         let excluir = new XMLHttpRequest
-                        excluir.open("POST", "http://5.189.175.37:8082/pedido/delete")
+                        excluir.open("POST", "https://5.189.175.37:8082/pedido/delete")
                         excluir.setRequestHeader('Authorization',"Bearer "+ user.token)
                         excluir.setRequestHeader('Content-Type','application/json')
                         excluir.send(`{"to":"${resp.list[friend].id}"}`)
@@ -1310,7 +1310,7 @@ function Friends(){
     if(f_topic!='none'){reauth()}
     if(f_topic!='bloqued'){f_topic = "bloqued"}
     let request = new XMLHttpRequest
-    request.open("GET", "http://5.189.175.37:8082"+"/bloqueados")
+    request.open("GET", "https://5.189.175.37:8082"+"/bloqueados")
     request.setRequestHeader('Authorization',"Bearer "+ user.token)
     request.send()
     request.onload= ()=>{
@@ -1361,7 +1361,7 @@ function Friends(){
                         catch(e){}
                         console.log('exc')
                         let excluir = new XMLHttpRequest
-                        excluir.open("DELETE", "http://5.189.175.37:8082/bloqueado/delete")
+                        excluir.open("DELETE", "https://5.189.175.37:8082/bloqueado/delete")
                         excluir.setRequestHeader('Authorization',"Bearer "+ user.token)
                         excluir.setRequestHeader('Content-Type','application/json')
                         excluir.send(`{"to":"${resp.list[bloq].id}"}`)

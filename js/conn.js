@@ -9,7 +9,7 @@ let configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}
 let rtc=new RTCPeerConnection(configuration)
 console.log(rtc,RTCPeerConnectionIceEvent)
 
-let socket = io('http://5.189.175.37:3001',{query:{token:user.token}})
+let socket = io('https://5.189.175.37:3001',{query:{token:user.token}})
 
 socket.emit('startshare')
 window.addEventListener('beforeunload',()=>{socket.emit('loggout')},false)
