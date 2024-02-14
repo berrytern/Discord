@@ -32,7 +32,7 @@ function submit(href){
     formData.append("password", password);
     formData.append('file', fileimg[0], fileimg[0].name);
     var request=new XMLHttpRequest;
-    request.open("POST","https://5.189.175.37:8082"+href ,true);
+    request.open("POST","https://discord.berrytern.com.br:8082"+href ,true);
     request.setRequestHeader("data",formData)
     request.send(formData);
     request.onload=(e)=>{
