@@ -114,7 +114,7 @@ module.exports = app=>{
         if (!username || !password) return res.status(406).send({Error: "missing information!"});
         const salt = bcrypt.genSaltSync(10)
         let hashpass= bcrypt.hashSync(password, salt)
-        Conta.findOne({username: username}).then((e)=>{
+        Conta.findOne({username: username.toLowerCase()}).then((e)=>{
             if(JSON.stringify(e)!='null'){res.status(403).send({'message':'already exists'})}
             else{
             if (!req.files || Object.keys(req.files).length === 0) {
@@ -129,7 +129,7 @@ module.exports = app=>{
             }
             new Conta({
                 eAdmin: 1,
-                username: req.body.username,
+                username: req.body.username.toLowerCase(),
                 password: hashpass,
                 icon: usepath,
                 email: null
@@ -146,7 +146,7 @@ module.exports = app=>{
         const { username, password } = req.body
         if (!username || !password) return res.status(406).send({Error: "missing information!"});
 
-        Conta.findOne({username: username},(err,doc)=>{
+        Conta.findOne({username: username.toLowerCase()},(err,doc)=>{
             if(!!doc){
                 if(bcrypt.compareSync(password, doc.password)){
                     doc.status = doc.laststatus
