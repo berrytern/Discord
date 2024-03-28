@@ -9,7 +9,7 @@ let configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}
 let rtc=new RTCPeerConnection(configuration)
 console.log(rtc,RTCPeerConnectionIceEvent)
 
-let socket = io('https://discord.berrytern.com.br:3001',{query:{token:user.token}})
+let socket = io('http://api.discord.berrytern.com.br:3001',{query:{token:user.token}})
 
 socket.emit('startshare')
 window.addEventListener('beforeunload',()=>{socket.emit('loggout')},false)

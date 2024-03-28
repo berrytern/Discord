@@ -48,7 +48,7 @@ if(!token){
 }
 else{
     validate= new XMLHttpRequest
-    validate.open("POST",'https://discord.berrytern.com.br:8082/validate')
+    validate.open("POST",'https://api.discord.berrytern.com.br:8082/validate')
     validate.setRequestHeader("Content-Type","application/json")
     validate.send('{"token":"'+token+'"}')
     validate.onload=(e)=>{
