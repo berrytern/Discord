@@ -2,15 +2,8 @@ const fs = require('fs')
 
 let isso= (server)=>{
     let jwt = require('jwt-simple')
-    let io = require('socket.io')(server, {origins: ["https://berrytern.github.io"],
-        handlePreflightRequest: (req, res) => {
-        res.writeHead(200, {
-          "Access-Control-Allow-Origin": "https://berrytern.github.io",
-          "Access-Control-Allow-Methods": "GET,POST",
-          "Access-Control-Allow-Credentials": true
-        });
-        res.end();
-      }})
+    let io = require('socket.io')(server)
+    io.origins(["https://berrytern.github.io:3001","https://berrytern.github.io:3000", "https://berrytern.github.io:3001"])
     let Conta = require('../models/Conta')
     let users = []
     io.on('connection',(client)=>{
