@@ -1,7 +1,8 @@
 require('dotenv').config()
 const express = require('express')
-var cors = require('cors')
-var app =express()
+const cors = require('cors')
+const app = express()
+const fs = require('fs')
 const consign = require('consign')
 const path =require('path')
 const handlebars = require('express-handlebars')
@@ -36,7 +37,7 @@ app.use(cors(corsOptionsDelegate))
 // path
     app.use(express.static(path.join(__dirname,"public")))
 // Mongoose
-mongoose.connect("mongodb://admin:admin@127.0.0.1:27017", { useNewUrlParser: true ,useUnifiedTopology: true}).then(()=>{
+mongoose.connect("mongodb://admin:admin@mongo:27017", { useNewUrlParser: true ,useUnifiedTopology: true}).then(()=>{
     console.log("Mongoose connected...")
 }).catch((err)=>{
     console.log(`cant connect to Mongoose, Error: ${err}`)
@@ -60,9 +61,16 @@ consign()
 //socket.io
 setInterval(setoff, 1000)
 
-const server = require('http').createServer(app)
-isso(3000)
+const server = require('https').createServer({
+    key: fs.readFileSync('./.certs/server.key'),
+    cert: fs.readFileSync('./.certs/server.crt')
+    },
+    app
+)
+const server_io = require('https').createServer()
+isso(server_io)
 const Port = 8082
+server_io.listen(3000)
 server.listen(Port, ()=>{
     console.log(`Servidor rodando na url http://localhost:${Port}`)
 })

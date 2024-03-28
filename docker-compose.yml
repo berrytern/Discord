@@ -3,8 +3,6 @@ services:
   mongo:
     image: mongo
     container_name: mongo
-    ports:
-      - 27017:27017
     restart: always
     command: >
       --tlsMode=allowTLS
@@ -23,19 +21,18 @@ services:
       driver: json-file
       options:
         max-size: 100m
-  
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: ds-rabbitmq
+  back:
+    build: .
+    container_name: ds-back
     restart: always
+    environment:
+      - AUTH_SECRET=${AUTH_SECRET}
     ports:
-      - 15672:15672 # Management UI
-      - 5672:5672 # AMQP Protocol
-      - 5671:5671 # AMQPS Protocol
-    volumes:
-      - ./.certs/rabbitmq:/etc/ssl:ro
-      - ./external_config/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
-    networks: 
+      - 3001:3000
+      - 8082:8082
+    volumes: 
+      - ./.certs/ds-back/:/usr/src/ds/.certs/:ro
+    networks:
       - ds-network
     logging:
       driver: json-file

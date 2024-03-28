@@ -1,8 +1,10 @@
+const fs = require('fs')
 
-let isso= (port)=>{
+let isso= (server)=>{
     let jwt = require('jwt-simple')
 
-    let io = require('socket.io')(port)
+    let io = require('socket.io')(server, {origins: ["https://berrytern.github.io"]
+    })
     let Conta = require('../models/Conta')
     let users = []
     io.on('connection',(client)=>{
@@ -14,7 +16,6 @@ let isso= (port)=>{
            user = jwt.decode(token,process.env.AUTH_SECRET)
            next()
         }catch(err){next()}//client.emit('tologin')}
-        
     })
 }
 module.exports = {isso}
