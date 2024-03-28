@@ -67,7 +67,10 @@ const server = require('https').createServer({
     },
     app
 )
-const server_io = require('https').createServer()
+const server_io = require('https').createServer({
+    key: fs.readFileSync('./.certs/server.key'),
+    cert: fs.readFileSync('./.certs/server.crt')
+})
 isso(server_io)
 const Port = 8082
 server_io.listen(3000)
