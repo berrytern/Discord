@@ -36,19 +36,19 @@ var new_pass = false
 function selected(is){
     if(this.id==undefined){var isto=is}
     else{var isto=this}
-    if(isto.id==lastselected){
-    
-    }
-    else{
-        console.log(isto.id)
-        document.querySelector(`#${isto.id}`).className ='option-selected :'+isto.con
-        let lt= document.querySelector(`#${lastselected}`)
-        lt.className=lt.className.replace('-selected','')
-        lastselected=isto.id
-        if(lastselected=='amigos'){
-
+    if(isto.id!=lastselected){
+        const selected = document.querySelector(`#${isto.id}`)
+        selected.className ='option-selected :'+isto.con
+        selected.disabled = true
+        const lt = document.querySelector(`#${lastselected}`)
+        if (lt) {
+            lt.className=lt.className.replace('-selected','')
+            lastselected.disabled = false
+            lastselected=isto.id
         }
+        return true
     }
+    return false
 }
 let topmsg
 let botmsg
@@ -96,7 +96,13 @@ function Conversas(){
         }
     }
     this.time =  Date.now()
-    this.to=(id,obj,group)=>{selected(document.getElementsByClassName('option :'+id)[0]);this.content(id,obj,group);setTimeout(()=>{this.aftermsg(id,document.getElementsByClassName('option-selected :'+id)[0].id)},1000);this.loadmsg(id,document.getElementsByClassName('option-selected :'+id)[0].id)}
+    this.to=(id,obj,group)=>{
+        if (selected(document.getElementsByClassName('option :'+id)[0])){
+            this.content(id,obj,group);
+            setTimeout(()=>{this.aftermsg(id,document.getElementsByClassName('option-selected :'+id)[0].id)},1000);
+            this.loadmsg(id,document.getElementsByClassName('option-selected :'+id)[0].id)
+        }
+    }
     this.loadmsg=(id,content_id)=>{
         document.querySelector('.message-content').addEventListener('mousewheel',(event)=>{
             if(document.querySelector('.option-selected').id==content_id){
@@ -140,7 +146,13 @@ function Conversas(){
         a.id= 'user'+num
         a.className = 'option :'+conversa._id
         a.con = conversa._id
-        a.onclick=()=>{selected(a);this.content(conversa._id,conversa,conversa.group);setTimeout(()=>{this.aftermsg(conversa._id,a.id)},1000);this.loadmsg(conversa._id,a.id)}
+        a.onclick=()=>{
+            if (selected(a)) {
+                this.content(conversa._id,conversa,conversa.group);
+                setTimeout(()=>{this.aftermsg(conversa._id,a.id)},1000);
+                this.loadmsg(conversa._id,a.id)
+            }
+        }
         let img = document.createElement('img')
         img.className='opt'
         let status = document.createElement('img')
