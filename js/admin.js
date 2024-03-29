@@ -34,7 +34,7 @@ function att_users(users){
 function post(rota){
     console.log('clicked')
     request = new XMLHttpRequest
-    request.open("POST",'http://api.discord.berrytern.com.br:8082/admin'+rota, true)
+    request.open("POST",'https://api.discord.berrytern.com.br:8082/admin'+rota, true)
     request.setRequestHeader("Content-Type","application/json")
     request.setRequestHeader("Authorization","Bearer "+localStorage.getItem('token'))
     request.send()

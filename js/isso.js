@@ -1,4 +1,4 @@
-//var socket= io('http://api.discord.berrytern.com.br:9030');
+//var socket= io('https://api.discord.berrytern.com.br:9030');
 console.log('algo')
 document.querySelector('#submit').addEventListener('click',(function(){
     var username = document.querySelector('#username').value

@@ -2,7 +2,7 @@ function submit(href){
     var username= document.getElementById("username").value
     var password= document.getElementById("password").value
     var request=new XMLHttpRequest;
-    request.open("POST","http://api.discord.berrytern.com.br:8082"+href),request.setRequestHeader("Content-Type","application/json"),request.send('{"username":"'+username+'","password": "'+password+'"}');
+    request.open("POST","https://api.discord.berrytern.com.br:8082"+href),request.setRequestHeader("Content-Type","application/json"),request.send('{"username":"'+username+'","password": "'+password+'"}');
     request.onload=(e)=>{
         console.log(request.responseText)
         if(JSON.parse(request.status)==200){

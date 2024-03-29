@@ -1,15 +1,15 @@
 let ip
 let getip = new XMLHttpRequest
 getip.open('GET',"https://www.cloudflare.com/cdn-cgi/trace")
-//getip.setRequestHeader('Access-Control-Allow-Origin', 'http://meuip.com')
-//getip.setRequestHeader('Origin','http://meuip.com')
+//getip.setRequestHeader('Access-Control-Allow-Origin', 'https://meuip.com')
+//getip.setRequestHeader('Origin','https://meuip.com')
 getip.send()
 getip.onload = (e)=>{ip=getip.responseText.split('ip=')[1].split('ts')[0]}
 let configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}
 let rtc=new RTCPeerConnection(configuration)
 console.log(rtc,RTCPeerConnectionIceEvent)
 
-let socket = io('http://api.discord.berrytern.com.br:3001',{query:{token:user.token}})
+let socket = io('https://api.discord.berrytern.com.br:3001',{query:{token:user.token}})
 
 socket.emit('startshare')
 window.addEventListener('beforeunload',()=>{socket.emit('loggout')},false)

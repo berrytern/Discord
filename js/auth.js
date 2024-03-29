@@ -3,7 +3,7 @@ user.token=localStorage.getItem('token') || null
 user.admin = 0
 function reauth(){
     validate= new XMLHttpRequest
-    validate.open("POST",'http://api.discord.berrytern.com.br:8082'+'/validate')
+    validate.open("POST",'https://api.discord.berrytern.com.br:8082'+'/validate')
     validate.setRequestHeader("Authorization","Bearer "+user.token)
     validate.send()
     validate.onload=()=>{
