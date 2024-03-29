@@ -53,59 +53,61 @@ function selected(is) {
 let topmsg
 let botmsg
 function Conversas() {
-    this.aftermsg = (id, content_id) => {
+    this.aftermsg = (id, elem_selected) => {
         reauth()
-        array = document.querySelectorAll('.message-content label#num')
-        lastmsg = document.querySelectorAll('#divmsg')
-        lasticon = document.querySelectorAll('#divicon')
-        lastmsg = lastmsg[lastmsg.length - 1]
-        lasticon = lasticon[lasticon.length - 1]
-        let big = ''
-        let biggest, biggestnum
-        if (array.length != 0) {
-            for (let num in array) {
-                if (typeof array[num].className !== 'undefined') {
-                    let novo = Number(array[num].className.split(':')[1])
-                    if (big == '') {
-                        big = novo
-                    } else if (big < novo) { big = novo; biggest = array[num].className }
+        if (document.querySelector('.option-selected').id == elem_selected.id) {
+            array = document.querySelectorAll('.message-content label#num')
+            let lastmsg = document.querySelectorAll('#divmsg')
+            lasticon = document.querySelectorAll('#divicon')
+            lastmsg = lastmsg[lastmsg.length - 1]
+            lasticon = lasticon[lasticon.length - 1]
+            let big = ''
+            let biggest, biggestnum
+            if (array.length != 0) {
+                for (let num in array) {
+                    if (typeof array[num].className !== 'undefined') {
+                        let novo = Number(array[num].className.split(':')[1])
+                        if (big == '') {
+                            big = novo
+                        } else if (big < novo) { big = novo; biggest = array[num].className }
+                    }
+                }
+                biggestnum = Number(biggest.split(':')[1]) + 1
+            } else { biggest = 'n' }
+            newmsg = new XMLHttpRequest()
+            newmsg.open("GET", "https://api.discord.berrytern.com.br:8082/conversa/" + id + `/${biggestnum}/n`)
+            newmsg.setRequestHeader('Authorization', 'Bearer ' + user.token)
+            newmsg.setRequestHeader('Content-Type', 'application/json')
+            newmsg.onerror = (e) => { console.log('error') }
+            newmsg.send()
+            newmsg.onload = (e) => {
+                if (document.querySelector('.option-selected').id == elem_selected.id) {
+                    console.log(biggest)
+                    if (newmsg.status == 204) {
+                    } else if (newmsg.status == 200) {
+                        const messages = JSON.parse(newmsg.responseText)[0]
+                        info_user = JSON.parse(newmsg.responseText)[1]
+                        const lastid = biggest.split(':')[0]
+                        this.addmsg(messages, info_user, lastmsg, lasticon, lastid)
+                        document.querySelector('.message-content').scrollTo(0, 10000)
+                    }
+                    setTimeout(() => { this.aftermsg(id, elem_selected) }, 1000)
                 }
             }
-            biggestnum = Number(biggest.split(':')[1]) + 1
-        } else { biggest = 'n' }
-        newmsg = new XMLHttpRequest()
-        newmsg.open("GET", "https://api.discord.berrytern.com.br:8082/conversa/" + id + `/${biggestnum}/n`)
-        newmsg.setRequestHeader('Authorization', 'Bearer ' + user.token)
-        newmsg.setRequestHeader('Content-Type', 'application/json')
-        newmsg.onerror = (e) => { console.log('error') }
-        newmsg.send()
-        newmsg.onload = (e) => {
-            if (document.querySelector('.option-selected').id == content_id) {
-                console.log(biggest)
-                if (newmsg.status == 204) {
-                } else if (newmsg.status == 200) {
-                    let messages = JSON.parse(newmsg.responseText)[0]
-                    info_user = JSON.parse(newmsg.responseText)[1]
-                    let lastid = biggest.split(':')[0]
-                    this.addmsg(messages, info_user, lastmsg, lasticon, lastid)
-                    document.querySelector('.message-content').scrollTo(0, 10000)
-                }
-                setTimeout(() => { this.aftermsg(id, content_id) }, 1000)
-            } else { }
         }
     }
     this.time = Date.now()
     this.to = (id, obj, group) => {
-        const element = document.getElementsByClassName('option :' + id)[0]
-        if (selected(element)) {
+        const elem_selected = document.getElementsByClassName('option :' + id)[0]
+        if (selected(elem_selected)) {
             this.content(id, obj, group);
-            setTimeout(() => { this.aftermsg(id, document.getElementsByClassName('option-selected :'+id)[0].id) }, 1000);
-            this.loadmsg(id, document.getElementsByClassName('option-selected :' + id)[0].id)
+            setTimeout(() => { this.aftermsg(id, elem_selected) }, 1000);
+            this.loadmsg(id, elem_selected)
         }
     }
-    this.loadmsg = (id, content_id) => {
+    this.loadmsg = (id, elem_selected) => {
         document.querySelector('.message-content').addEventListener('mousewheel', (event) => {
-            if (document.querySelector('.option-selected').id == content_id) {
+            if (document.querySelector('.option-selected').id == elem_selected.id) {
                 var rolled = 0;
                 if ('wheelDelta' in event) {
                     rolled = event.wheelDelta;
@@ -115,7 +117,7 @@ function Conversas() {
                     rolled = -40 * event.detail;
                 } if (rolled > 0 && document.querySelector('.message-content').scrollTop <= 0 && this.time < Date.now()) {
                     this.time = Date.now() + 3000
-                    console.log('up: ', content_id,)
+                    console.log('up: ', elem_selected.id)
                     let nextmsg = document.querySelector('.message-content').firstChild.children[1]
                     let nexticon = document.querySelector('.message-content').firstChild.children[0]
                     let next = document.querySelectorAll('label#num')[0].className.split(':')
@@ -149,8 +151,8 @@ function Conversas() {
         a.onclick = () => {
             if (selected(a)) {
                 this.content(conversa._id, conversa, conversa.group);
-                setTimeout(() => { this.aftermsg(conversa._id, a.id) }, 1000);
-                this.loadmsg(conversa._id, a.id)
+                setTimeout(() => { this.aftermsg(conversa._id, a) }, 1000);
+                this.loadmsg(conversa._id, a)
             }
         }
         let img = document.createElement('img')
@@ -196,7 +198,6 @@ function Conversas() {
             } else if (request.status == 200) {
 
                 let list = JSON.parse(request.responseText)['list']
-                let time = Date.now()
 
                 for (let conversa in list) {
                     this.con_add(list[conversa], conversa)
@@ -224,7 +225,7 @@ function Conversas() {
                 timelbl.style.color = 'rgb(150,150,150)'
                 timelbl.style.font = 'normal 9pt Arial'
                 timelbl.style.alignSelf = 'flex-end'
-                timelbl.style.margin = '5px 4px 4px 0px'
+                timelbl.style.margin = '5px 4px 5px 0px'
                 timelbl.style.visibility = 'hidden'
                 let message = document.createElement('label')
                 message.id = 'num'
@@ -410,7 +411,7 @@ function Conversas() {
         navl.appendChild(img)
         navl.appendChild(info)
         if (status.src.length > 0) { navl.appendChild(status) }
-        let getmsg = new XMLHttpRequest
+        const getmsg = new XMLHttpRequest
         getmsg.open('GET', 'https://api.discord.berrytern.com.br:8082/conversa/' + id + '/n/n')
         getmsg.setRequestHeader('Authorization', 'Bearer ' + user.token)
         getmsg.send()
@@ -423,11 +424,11 @@ function Conversas() {
             document.querySelector('.message').style.justifyContent = 'flex-end'
         }
 
-        let div = document.querySelector('.send-message')
+        const div = document.querySelector('.send-message')
         div.style.display = 'flex'
         div.style.background = 'rgba(255,255,255,0.13)'
         div.style.borderRadius = '10px'
-        let up = document.createElement('input')
+        const up = document.createElement('input')
         up.style.visibility = 'hidden'
         up.style.width = '0px'
         up.style.height = '0px'
@@ -435,28 +436,28 @@ function Conversas() {
         up.type = 'file'
         up.accept = '.png, .jpg, .jpeg'
         up.id = 'upmsg'
-        let uplbl = document.createElement('label')
+        const uplbl = document.createElement('label')
         uplbl.htmlFor = 'upmsg'
         uplbl.style.padding = '0px 9px'
         uplbl.style.marginTop = '4px'
-        let bg = document.createElement('div')
+        const bg = document.createElement('div')
         bg.style.marginTop = '2px'
         bg.style.borderRadius = '30px'
         bg.style.height = '30px'
         bg.style.background = 'rgba(22,22,22,0.4)'
-        let lblimg = document.createElement("img")
+        const lblimg = document.createElement("img")
         lblimg.src = '../image/upmsg.png'
         lblimg.style.width = '30px'
         lblimg.style.height = '30px'
-        let message = document.createElement('input')
+        const message = document.createElement('input')
         message.style.border = 0
         message.style.background = 'transparent'
         message.style.width = '100%'
         message.type = 'text'
         message.addEventListener('keydown', (e) => {
-            if (e.key == "Enter") {
+            if (e.key == "Enter" && message.value) {
                 console.log(id)
-                let sendm = new XMLHttpRequest
+                const sendm = new XMLHttpRequest
                 sendm.open('POST', `https://api.discord.berrytern.com.br:8082/message/${id}`)
                 sendm.setRequestHeader('Authorization', "Bearer " + user.token)
                 sendm.setRequestHeader('Content-Type', 'application/json')
@@ -475,7 +476,7 @@ function Conversas() {
     this.menu = (elem, id, group) => {
         console.log(elem, id, group)
         console.log('menu')
-        let div = document.createElement('div')
+        const div = document.createElement('div')
         div.style.display = "flex"
         div.style.flexDirection = 'column'
         div.style.position = 'fixed'
@@ -690,7 +691,8 @@ function user_edit(action = '') {
     }
 }
 function edit_password() {
-    document.querySelector('div.account-user.edit div  div.user-change a').innerHTML = ''
+    const user_div = document.querySelector('div.account-user.edit div  div.user-change a')
+    user_div.innerHTML = ''
     const div = document.createElement('div')
     div.className = 'horizon'
     div.id = 'newpassword'
@@ -716,13 +718,13 @@ function edit_password() {
         evt.target.src = '../unsee.png'
         input.type = 'password'
     }
-    document.querySelector('div.account-user.edit div  div.user-change').appendChild(label)
-    document.querySelector('div.account-user.edit div  div.user-change').appendChild(div)
+    user_div.appendChild(label)
+    user_div.appendChild(div)
     new_pass = true
 }
 
 function logout() {
-    request = new XMLHttpRequest
+    const request = new XMLHttpRequest
     request.open('POST', "https://api.discord.berrytern.com.br:8082/logout")
     request.setRequestHeader('Authorization', "Bearer " + user.token)
     request.setRequestHeader('Content-Type', 'application/json')
@@ -736,7 +738,7 @@ function user_config_close() {
 }
 function seach() {
     console.log('seach')
-    let fundo = document.createElement('a')
+    const fundo = document.createElement('a')
     fundo.style.width = "100vw"
     fundo.style.height = "100vh"
     fundo.style.background = 'rgba(0,0,0,0.8)'
@@ -748,7 +750,7 @@ function seach() {
         if ((event.clientX > ((window.innerWidth / 2) - 277) && event.clientY > ((window.innerHeight / 2) - 150)) && ((event.clientX < ((window.innerWidth / 2) + 277) && event.clientY < ((window.innerHeight / 2) + 189)))) { }
         else { document.querySelector('body').removeChild(fundo) }
     }
-    let btn = document.createElement('div')
+    const btn = document.createElement('div')
     btn.style.width = "550px"
     btn.style.height = '340px'
     btn.style.background = 'rgb(44,44,44)'
@@ -813,7 +815,6 @@ function desapear(elem, father, color) {
 }
 function Friends() {
     this.to = () => {
-
         document.querySelector('.message').style.justifyContent = ''
         document.querySelector('.send-message').innerHTML = ''
         document.querySelector('.send-message').style = ''
@@ -836,7 +837,7 @@ function Friends() {
     this.able = () => {
         if (f_topic != 'none') { reauth() }
         if (f_topic != 'able') { f_topic = 'able' }
-        let request = new XMLHttpRequest
+        const request = new XMLHttpRequest
         request.open("POST", "https://api.discord.berrytern.com.br:8082/friends")
         request.setRequestHeader('Authorization', "Bearer " + user.token)
         request.send()
@@ -844,10 +845,10 @@ function Friends() {
             let resp = JSON.parse(request.responseText)
             if (f_topic == 'all') { }
             else {
-                let message = document.querySelector('div.message-content')
+                const message = document.querySelector('div.message-content')
                 message.innerHTML = ''
-                let topic_msg = 'ONLINE'
-                let topic = document.createElement('label')
+                const topic_msg = 'ONLINE'
+                const topic = document.createElement('label')
                 topic.className = 'f lbl'
                 topic.style.margin = '10px 0px 10px 20px'
                 topic.style.color = 'white'
@@ -858,19 +859,19 @@ function Friends() {
                     let body = document.querySelector('body')
                     for (let friend in resp.list) {
                         if (resp.list[friend].status != "offline") {
-                            let div = document.createElement('div')
+                            const div = document.createElement('div')
                             div.className = 'f div'
                             div.style.borderTop = 'solid 1px rgb(5, 60, 82)'
                             div.style.borderRadius = '4px'
                             div.onmouseover = () => { div.style.background = 'rgba(190, 190, 190,0.2)' }
                             div.onmouseout = () => { div.style.background = 'transparent' }
-                            let icon = document.createElement('img')
+                            const icon = document.createElement('img')
                             icon.src = 'data:image/jpeg;base64,' + resp.list[friend].icon
                             icon.style.margin = '5px 0px 5px 0px'
                             icon.style.borderRadius = '30px'
                             icon.style.width = '30px'
                             icon.style.height = '30px'
-                            let status = document.createElement('img')
+                            const status = document.createElement('img')
                             status.style.width = '14px'
                             status.style.height = '14px'
                             status.style.position = 'relative'
@@ -880,7 +881,7 @@ function Friends() {
                             status.style.marginLeft = '-12px'
                             status.style.marginTop = '22px'
                             status.src = '../image/' + resp.list[friend].status + '.png'
-                            let lbl = document.createElement('label')
+                            const lbl = document.createElement('label')
                             lbl.innerText = resp.list[friend].username
                             lbl.style.margin = '10px 0px 0px 10px'
                             lbl.style.font = 'normal 12pt Arial'
@@ -895,7 +896,7 @@ function Friends() {
                             msg.onclick = () => {
 
                             }
-                            let opt = document.createElement('button')
+                            const opt = document.createElement('button')
                             opt.style.margin = '5px 5px 0px 5px'
                             opt.style.borderRadius = '30px'
                             opt.onmouseover = () => {
@@ -919,7 +920,7 @@ function Friends() {
                                     body.removeChild(option)
                                     friends_all()
                                 }
-                                let exc = document.createElement('button')
+                                const exc = document.createElement('button')
                                 exc.style.background = 'transparent'
                                 exc.style.margin = '5px'
                                 exc.style.height = 'calc(100% - 10px)'
@@ -929,7 +930,7 @@ function Friends() {
                                 exc.onmouseover = () => { exc.style.background = 'rgb(39,39,39)' }
                                 exc.onmouseleave = () => { exc.style.background = 'transparent' }
                                 exc.onclick = () => {
-                                    let excluir = new XMLHttpRequest
+                                    const excluir = new XMLHttpRequest
                                     excluir.open("POST", "https://api.discord.berrytern.com.br:8082/friend/delete")
                                     excluir.setRequestHeader('Authorization', "Bearer " + user.token)
                                     excluir.setRequestHeader('Content-Type', 'application/json')
@@ -956,13 +957,13 @@ function Friends() {
                                 option.appendChild(exc)
                                 body.appendChild(option)
                             }
-                            let msgicon = document.createElement('img')
+                            const msgicon = document.createElement('img')
                             msgicon.src = '../image/msg.png'
                             msgicon.style.margin = '4px 0px 0px 0px'
                             msgicon.style.width = '12px'
                             msgicon.style.height = '13px'
                             msgicon.style.filter = 'opacity(80%)'
-                            let opticon = document.createElement('img')
+                            const opticon = document.createElement('img')
                             opticon.src = '../image/optc.png'
                             opticon.style.margin = '8.5px'
                             opticon.style.width = '12px'
@@ -987,16 +988,16 @@ function Friends() {
     this.all = () => {
         if (f_topic != 'none') { reauth() }
         if (f_topic != 'all') { f_topic = 'all' }
-        let request = new XMLHttpRequest
+        const request = new XMLHttpRequest
         request.open("POST", "https://api.discord.berrytern.com.br:8082/friends")
         request.setRequestHeader('Authorization', "Bearer " + user.token)
         request.send()
         request.onload = () => {
             let resp = JSON.parse(request.responseText)
-            let message = document.querySelector('div.message-content')
+            const message = document.querySelector('div.message-content')
             message.innerHTML = ''
-            let topic_msg = 'TODOS OS AMIGOS'
-            let topic = document.createElement('label')
+            const topic_msg = 'TODOS OS AMIGOS'
+            const topic = document.createElement('label')
             topic.className = 'f lbl'
             topic.style.margin = '10px 0px 10px 20px'
             topic.style.color = 'white'
@@ -1004,22 +1005,22 @@ function Friends() {
             message.appendChild(topic)
             if (resp.exist) {
                 let count = 0
-                let body = document.querySelector('body')
+                const body = document.querySelector('body')
                 for (let friend in resp.list) {
                     count += 1
-                    let div = document.createElement('div')
+                    const div = document.createElement('div')
                     div.className = 'f div'
                     div.style.borderTop = 'solid 1px rgb(5, 60, 82)'
                     div.style.borderRadius = '4px'
                     div.onmouseover = () => { div.style.background = 'rgba(190, 190, 190,0.2)' }
                     div.onmouseout = () => { div.style.background = 'transparent' }
-                    let icon = document.createElement('img')
+                    const icon = document.createElement('img')
                     icon.src = 'data:image/jpeg;base64,' + resp.list[friend].icon
                     icon.style.margin = '5px 0px 5px 0px'
                     icon.style.borderRadius = '30px'
                     icon.style.width = '30px'
                     icon.style.height = '30px'
-                    let status = document.createElement('img')
+                    const status = document.createElement('img')
                     status.style.width = '14px'
                     status.style.height = '14px'
                     status.style.position = 'relative'
@@ -1029,20 +1030,20 @@ function Friends() {
                     status.style.marginLeft = '-12px'
                     status.style.marginTop = '22px'
                     status.src = '../image/' + resp.list[friend].status + '.png'
-                    let lbl = document.createElement('label')
+                    const lbl = document.createElement('label')
                     lbl.innerText = resp.list[friend].username
                     lbl.style.margin = '10px 0px 0px 10px'
                     lbl.style.font = 'normal 12pt Arial'
                     lbl.style.fontWeight = 'bold'
                     lbl.style.color = 'white'
                     lbl.style.flex = '1 1'
-                    let msg = document.createElement('button')
+                    const msg = document.createElement('button')
                     msg.style.margin = '5px 0px 0px 5px'
                     msg.onmouseover = () => {
                         about(msg, 'Mensagem')
                     }
                     msg.onclick = () => {
-                        let find = new XMLHttpRequest
+                        const find = new XMLHttpRequest
                         find.open('POST', 'https://api.discord.berrytern.com.br:8082/conversa/new')
                         find.setRequestHeader('Authorization', 'Bearer ' + user.token)
                         find.setRequestHeader('Content-Type', 'application/json')
@@ -1051,7 +1052,6 @@ function Friends() {
                             console.log(find.status)
                             if (find.status == 409) {
                                 console.log(find.responseText, find.status)
-                                let id = JSON.parse(find.responseText)['id']
                                 let obj = JSON.parse(find.responseText)['obj']
                                 conversa.to(obj._id, obj, false)
                             } else {
@@ -1062,7 +1062,7 @@ function Friends() {
                             }
                         }
                     }
-                    let opt = document.createElement('button')
+                    const opt = document.createElement('button')
                     opt.style.margin = '5px 5px 0px 5px'
                     opt.style.borderRadius = '30px'
                     opt.onmouseover = () => {
@@ -1070,7 +1070,7 @@ function Friends() {
                     }
                     opt.onclick = (event, e) => {
                         console.log(event, (event.clientY / window.innerHeight) * 100)
-                        let option = document.createElement('div')
+                        const option = document.createElement('div')
                         option.className = 'float-opt'
                         option.style.display = 'flex'
                         option.style.flexDirection = 'column'
@@ -1086,7 +1086,7 @@ function Friends() {
                             body.removeChild(option)
                             friends_all()
                         }
-                        let exc = document.createElement('button')
+                        const exc = document.createElement('button')
                         exc.style.background = 'transparent'
                         exc.style.margin = '5px'
                         exc.style.height = 'calc(100% - 10px)'
@@ -1096,7 +1096,7 @@ function Friends() {
                         exc.onmouseover = () => { exc.style.background = 'rgb(39,39,39)' }
                         exc.onmouseleave = () => { exc.style.background = 'transparent' }
                         exc.onclick = () => {
-                            let excluir = new XMLHttpRequest
+                            const excluir = new XMLHttpRequest
                             excluir.open("POST", "https://api.discord.berrytern.com.br:8082/friend/delete")
                             excluir.setRequestHeader('Authorization', "Bearer " + user.token)
                             excluir.setRequestHeader('Content-Type', 'application/json')
@@ -1123,13 +1123,13 @@ function Friends() {
                         option.appendChild(exc)
                         body.appendChild(option)
                     }
-                    let msgicon = document.createElement('img')
+                    const msgicon = document.createElement('img')
                     msgicon.src = '../image/msg.png'
                     msgicon.style.margin = '4px 0px 0px 0px'
                     msgicon.style.width = '12px'
                     msgicon.style.height = '13px'
                     msgicon.style.filter = 'opacity(80%)'
-                    let opticon = document.createElement('img')
+                    const opticon = document.createElement('img')
                     opticon.src = '../image/optc.png'
                     opticon.style.margin = '8.5px'
                     opticon.style.width = '12px'
@@ -1152,14 +1152,14 @@ function Friends() {
         console.log('add()')
         if (f_topic != 'none') { reauth() }
         if (f_topic != 'add') { f_topic = "add" }
-        let message = document.querySelector('div.message-content')
+        const message = document.querySelector('div.message-content')
         message.innerHTML = ''
-        let topic = document.createElement('label')
+        const topic = document.createElement('label')
         topic.className = 'f lbl'
         topic.style.margin = '10px 0px 10px 20px'
         topic.innerText = 'ADICIONAR UM AMIGO'
         topic.style.color = 'white'
-        divinp = document.createElement('div')
+        const divinp = document.createElement('div')
         divinp.style.background = 'rgb(48,51,57)'
         divinp.style.border = 'solid 1.2px  black'
         divinp.style.borderRadius = '10px 10px 10px 10px'
@@ -1169,7 +1169,7 @@ function Friends() {
         divinp.style.margin = '0px 20px'
 
         divinp.style.zIndex = 0
-        input = document.createElement('input')
+        const input = document.createElement('input')
         input.style.padding = '0px 0px 0px 20px'
         input.style.color = 'white'
         input.style.backgroundColor = 'transparent'
@@ -1177,7 +1177,7 @@ function Friends() {
         input.style.border = '0'
         input.style.flex = '2 2'
         input.innerText = 'Insira o nome de usuário'
-        btn = document.createElement('button')
+        const btn = document.createElement('button')
         btn.style.cursor = 'pointer'
         btn.innerText = 'Enviar pedido de amizade'
         btn.style.color = 'white'
@@ -1188,14 +1188,12 @@ function Friends() {
         btn.style.border = 'solid 1.2px  black'
         btn.style.borderLeft = '0'
         btn.onclick = () => {
-            pedid = new XMLHttpRequest
+            const pedid = new XMLHttpRequest
             pedid.open('POST', 'https://api.discord.berrytern.com.br:8082/pedido/new')
             pedid.setRequestHeader('Authorization', 'Bearer ' + user.token)
             pedid.setRequestHeader('Content-Type', 'application/json')
             pedid.send(`{"to":"${input.value}"}`)
             pedid.onload = () => {
-                console.log(pedid.responseText)
-                resp = JSON.parse(pedid.responseText) || null
                 if (pedid.status == 200) { alert('pedido enviado') }
                 else if (pedid.status == 404) {
                     alert('usuário não existe')
@@ -1230,11 +1228,11 @@ function Friends() {
         request.setRequestHeader('Authorization', "Bearer " + user.token)
         request.send()
         request.onload = () => {
-            let resp = JSON.parse(request.responseText)
-            let message = document.querySelector('div.message-content')
+            const resp = JSON.parse(request.responseText)
+            const message = document.querySelector('div.message-content')
             message.innerHTML = ''
-            let topic = document.createElement('label')
-            let topic_msg = 'TODOS OS PEDIDOS'
+            const topic = document.createElement('label')
+            const topic_msg = 'TODOS OS PEDIDOS'
             topic.className = 'f lbl'
             topic.style.margin = '10px 0px 10px 20px'
             topic.style.color = 'white'
@@ -1245,23 +1243,23 @@ function Friends() {
                 for (let friend in resp.list) {
                     count += 1
                     console.log(count)
-                    let div = document.createElement('div')
+                    const div = document.createElement('div')
                     div.className = 'f div'
                     div.style.borderTop = 'solid 0.1px rgb(140,140,200)'
-                    let icon = document.createElement('img')
+                    const icon = document.createElement('img')
                     icon.src = 'data:image/jpeg;base64,' + resp.list[friend].icon
                     icon.style.margin = '5px 0px 5px 0px'
                     icon.style.borderRadius = '30px'
                     icon.style.width = '30px'
                     icon.style.height = '30px'
-                    let lbl = document.createElement('label')
+                    const lbl = document.createElement('label')
                     lbl.innerText = resp.list[friend].username
                     lbl.style.margin = '10px 0px 0px 10px'
                     lbl.style.color = 'white'
                     lbl.style.font = 'normal 12pt Arial'
                     lbl.style.fontWeight = 'bold'
                     lbl.style.flex = '1 1'
-                    let acc = document.createElement('button')
+                    const acc = document.createElement('button')
                     acc.style.margin = '5px 0px 0px 5px'
                     acc.onmouseover = () => {
                         acc.style.cursor = 'pointer'
@@ -1284,7 +1282,7 @@ function Friends() {
                         aceitar.send(`{"to":"${resp.list[friend].id}"}`)
                         aceitar.onload = () => { if (aceitar.status == 200) { desapear(div, message, 'rgb(90,255,100)'); friend -= 1; topic.innerText = topic_msg + ' - ' + friend } }
                     }
-                    let exc = document.createElement('button')
+                    const exc = document.createElement('button')
                     exc.style.margin = '5px 0px 0px 5px'
                     exc.onmouseover = () => {
                         exc.style.cursor = 'pointer'
@@ -1300,7 +1298,7 @@ function Friends() {
                         try { document.querySelector('body').removeChild(document.querySelector('.float-info')) }
                         catch (e) { }
                         console.log('exc')
-                        let excluir = new XMLHttpRequest
+                        const excluir = new XMLHttpRequest
                         excluir.open("POST", "https://api.discord.berrytern.com.br:8082/pedido/delete")
                         excluir.setRequestHeader('Authorization', "Bearer " + user.token)
                         excluir.setRequestHeader('Content-Type', 'application/json')
@@ -1315,12 +1313,12 @@ function Friends() {
                             }
                         }
                     }
-                    let accimg = document.createElement('img')
+                    const accimg = document.createElement('img')
                     accimg.src = '../image/accept.png'
                     accimg.style.filter = 'invert(20%)'
                     accimg.style.width = '15px'
                     accimg.style.margin = '2.5px 0px 0px 0px'
-                    let excimg = document.createElement('img')
+                    const excimg = document.createElement('img')
                     excimg.src = '../image/unaccept.png'
                     excimg.style.filter = 'invert(20%)'
                     excimg.style.width = '12px'
@@ -1342,17 +1340,17 @@ function Friends() {
         console.log('bloqued()')
         if (f_topic != 'none') { reauth() }
         if (f_topic != 'bloqued') { f_topic = "bloqued" }
-        let request = new XMLHttpRequest
+        const request = new XMLHttpRequest
         request.open("GET", "https://api.discord.berrytern.com.br:8082" + "/bloqueados")
         request.setRequestHeader('Authorization', "Bearer " + user.token)
         request.send()
         request.onload = () => {
             if (request.status == 404) {
             } else {
-                let resp = JSON.parse(request.responseText)
-                let message = document.querySelector('div.message-content')
+                const resp = JSON.parse(request.responseText)
+                const message = document.querySelector('div.message-content')
                 message.innerHTML = ''
-                let topic = document.createElement('label')
+                const topic = document.createElement('label')
                 topic.className = 'f lbl'
                 topic.style.margin = '10px 0px 10px 20px'
                 topic.style.color = 'white'
@@ -1361,23 +1359,23 @@ function Friends() {
                 if (resp.exist) {
                     let count
                     for (let bloq in resp.list) {
-                        let div = document.createElement('div')
+                        const div = document.createElement('div')
                         div.className = 'f div'
                         div.style.borderTop = 'solid 0.1px rgb(140,140,200)'
-                        let icon = document.createElement('img')
+                        const icon = document.createElement('img')
                         icon.src = 'data:image/jpeg;base64,' + resp.list[bloq].icon
                         icon.style.margin = '5px 0px 5px 0px'
                         icon.style.borderRadius = '30px'
                         icon.style.width = '30px'
                         icon.style.height = '30px'
-                        let lbl = document.createElement('label')
+                        const lbl = document.createElement('label')
                         lbl.innerText = resp.list[bloq].username
                         lbl.style.margin = '10px 0px 0px 10px'
                         lbl.style.color = 'white'
                         lbl.style.font = 'normal 12pt Arial'
                         lbl.style.fontWeight = 'bold'
                         lbl.style.flex = '1 1'
-                        let exc = document.createElement('button')
+                        const exc = document.createElement('button')
                         exc.style.margin = '5px 0px 0px 5px'
                         exc.onmouseover = () => {
                             exc.style.cursor = 'pointer'
@@ -1393,7 +1391,7 @@ function Friends() {
                             try { document.querySelector('body').removeChild(document.querySelector('.float-info')) }
                             catch (e) { }
                             console.log('exc')
-                            let excluir = new XMLHttpRequest
+                            const excluir = new XMLHttpRequest
                             excluir.open("DELETE", "https://api.discord.berrytern.com.br:8082/bloqueado/delete")
                             excluir.setRequestHeader('Authorization', "Bearer " + user.token)
                             excluir.setRequestHeader('Content-Type', 'application/json')
@@ -1408,12 +1406,12 @@ function Friends() {
                                 }
                             }
                         }
-                        let accimg = document.createElement('img')
+                        const accimg = document.createElement('img')
                         accimg.src = '../image/accept.png'
                         accimg.style.filter = 'invert(20%)'
                         accimg.style.width = '15px'
                         accimg.style.margin = '2.5px 0px 0px 0px'
-                        let excimg = document.createElement('img')
+                        const excimg = document.createElement('img')
                         excimg.src = '../image/unaccept.png'
                         excimg.style.filter = 'invert(20%)'
                         excimg.style.width = '12px'
