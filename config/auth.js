@@ -21,7 +21,7 @@ function return_token(user){
 function auth(req,res,next){
     return (req,res,next)=>{
         header_token=req.header('Authorization') || null
-        if(!header_token) {res.redirect('http://berrytern.github.io/api_DeskApp/html/login.html')}
+        if(!header_token) {res.redirect('https://berrytern.github.io/Discord/html/login.html')}
         else{
         token = req.header('Authorization').split(' ')[1] || null
         if(!token){res.redirect('/login')}

@@ -13,7 +13,7 @@ const mongoose = require('mongoose')
 const {setoff} = require('./config/setoffline.js')
 const {isso} = require('./socket/io.js')
 
-var whitelist = ['https://berrytern.github.io', 'file:']
+var whitelist = ['https://berrytern.github.io', 'file:', 'https://discord.berrytern.com.br']
 var corsOptionsDelegate = function (req, callback) {
   var corsOptions;
   if (whitelist.indexOf(req.header('Origin')) !== -1) {
@@ -73,7 +73,7 @@ const server_io = require('https').createServer({
 })
 isso(server_io)
 const Port = 8082
-server_io.listen(3000)
+server_io.listen(3001)
 server.listen(Port, ()=>{
     console.log(`Servidor rodando na url http://localhost:${Port}`)
 })

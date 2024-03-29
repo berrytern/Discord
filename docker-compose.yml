@@ -28,7 +28,7 @@ services:
     environment:
       - AUTH_SECRET=${AUTH_SECRET}
     ports:
-      - 3001:3000
+      - 3001:3001
       - 8082:8082
     volumes: 
       - ./.certs/ds-back/:/usr/src/ds/.certs/:ro
