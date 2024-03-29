@@ -10,13 +10,10 @@ function reauth(){
         if(validate.status == 401){location.href = './login.html'
         }else if(validate.status == 500){
             location.href = './login.html'
-        }else{  
-            user.token = JSON.parse(validate.responseText).token
-            user.username = JSON.parse(validate.responseText).username
-            user.email = JSON.parse(validate.responseText).email
-            user.icon = JSON.parse(validate.responseText).icon
-            user.status = JSON.parse(validate.responseText).status
-            user.admin = JSON.parse(validate.responseText).admin
+        }else{
+            if (validate.responseText){
+                user = JSON.parse(validate.responseText)
+            }
             if(user.token==null){
                 alert('user not logged')
                 location.href="./login.html"}
